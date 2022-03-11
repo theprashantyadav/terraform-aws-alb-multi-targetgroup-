@@ -1,0 +1,137 @@
+---
+#
+# This is the canonical configuration for the `README.md`
+# Run `make readme` to rebuild the `README.md`
+#
+
+# Name of this project
+name : Terraform AWS multi-targetgroup
+
+# License of this project
+license: "MIT"
+
+# Canonical GitHub repo
+github_repo: clouddrove/terraform-aws-multi-targetgroup
+
+# Badges to display
+badges:
+  - name: "Terraform"
+    image: "https://img.shields.io/badge/Terraform-v0.14-green"
+    url: "https://www.terraform.io"
+  - name: "Licence"
+    image: "https://img.shields.io/badge/License-MIT-blue.svg"
+    url: "LICENSE.md"
+
+#  description of this project
+description: |-
+  Terraform module is used to setup multi-targetgroup service to manage notifications on application.
+# extra content
+# please not remove these two If you need add more
+include:
+  - "terraform.md"
+
+# How to use this project
+usage : |-
+
+  ### Simple Example
+  Here is an example of how you can use this module in your inventory structure:
+    ```hcl
+        module "alb" {
+      version     = "0.15.0"
+
+      name        = "alb"
+      environment = "test"
+      label_order = ["environment", "name"]
+
+      enable                     = true
+      internal                   = false
+      load_balancer_type         = "application"
+      instance_count             = module.ec2.instance_count
+      security_groups            = [module.ssh.security_group_ids, module.http_https.security_group_ids]
+      subnets                    = module.public_subnets.public_subnet_id
+      enable_deletion_protection = false
+      drop_invalid_header_fields = true
+
+      target_id = module.ec2.instance_id
+      vpc_id    = module.vpc.vpc_id
+
+      https_enabled            = false
+      http_enabled             = false
+      https_port               = 443
+      listener_type            = "forward"
+      listener_certificate_arn = "arn:aws:acm:eu-west-1:XXXXXXXXXXX:certificate/ab889a8d-c7f8-4cb7-8c34-0fecbc5fdc01"
+      target_group_port        = [22000, 4444, 8001, 8888]
+      http_ports               = [4444, 8001, 8888]
+
+      target_groups = [
+      {
+      backend_protocol     = "HTTP"
+      backend_port         = 22000
+      target_type          = "instance"
+      deregistration_delay = 300
+      health_check = {
+      enabled             = true
+      interval            = 30
+      path                = "/"
+      port                = "traffic-port"
+      healthy_threshold   = 3
+      unhealthy_threshold = 3
+      timeout             = 10
+      protocol            = "HTTP"
+      matcher             = "200-399"
+      }
+      },
+      {
+      backend_protocol     = "HTTP"
+      backend_port         = 4444
+      target_type          = "instance"
+      deregistration_delay = 300
+      health_check = {
+      enabled             = true
+      interval            = 30
+      path                = "/"
+      port                = "traffic-port"
+      healthy_threshold   = 3
+      unhealthy_threshold = 3
+      timeout             = 10
+      protocol            = "HTTP"
+      matcher             = "200-399"
+      }
+      },
+      {
+      backend_protocol     = "HTTP"
+      backend_port         = 8001
+      target_type          = "instance"
+      deregistration_delay = 300
+      health_check = {
+      enabled             = true
+      interval            = 30
+      path                = "/"
+      port                = "traffic-port"
+      healthy_threshold   = 3
+      unhealthy_threshold = 3
+      timeout             = 10
+      protocol            = "HTTP"
+      matcher             = "200-399"
+      }
+      },
+      {
+      backend_protocol     = "HTTP"
+      backend_port         = 8888
+      target_type          = "instance"
+      deregistration_delay = 300
+      health_check = {
+      enabled             = true
+      interval            = 30
+      path                = "/"
+      port                = "traffic-port"
+      healthy_threshold   = 3
+      unhealthy_threshold = 3
+      timeout             = 10
+      protocol            = "HTTP"
+      matcher             = "200-399"
+      }
+      }
+      ]
+    }
+    ```
